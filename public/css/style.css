@@ -1,0 +1,146 @@
+body{
+  font-family: 'Lato', sans-serif;
+}
+
+/* https://stackoverflow.com/questions/62162645/change-color-of-chromes-calendar-icon-in-html-date-input */
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+input[type="date" i],  input[type="date" i]:focus{
+  color: rgba(255, 255, 255, 0.685);
+}
+
+
+.hero{
+  height: 100vh;
+  position: relative;
+}
+
+.hero-container{
+  width: 65%;
+}
+.hero-image{
+  height: 100vh;
+  background-image: linear-gradient(0deg, #00000088 30%, rgb(75, 72, 72) 100%), url("/image/header_image.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: top center;
+  background-attachment: fixed;
+}
+
+.hero-text{
+  letter-spacing: 10px;
+} 
+
+.hero-text-div{
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.reserve-button{
+  width: 200px;
+}
+
+#food-slide{
+  width: 400px;
+  height: 400px;
+}
+
+.summary{
+  max-width: 1000px;
+}
+
+.menu{
+  background-color: rgb(246, 230, 230);
+}
+
+.menu-container{
+  max-width: 1200px;
+}
+
+.nav-link{
+  color: rgba(168, 158, 158, 0.856);
+  font-size: 20px;
+
+}
+.nav-link.active, .nav-link:hover{
+  color: black;
+}
+
+#menu-nav{
+  max-width: 600px;
+}
+
+#menu-tab-content{
+  max-width: 900px;
+}
+
+.menu-item{
+  border-top: 1px solid rgb(209, 208, 208);
+}
+
+.menu-item:last-child{
+  border-bottom: 1px solid rgb(209, 208, 208);
+}
+
+.reservation{
+  background-image: url("/image/reservation-bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: top center;
+  background-attachment: fixed;
+  height: auto;
+}
+
+.form-control:not(#special-instruction):not(#newsletter){
+  height: 65px;
+
+}
+.form-control{
+  background-color: transparent;
+  color: white;
+}
+
+#reservation-form{
+  max-width: 800px;
+}
+
+.form-control:focus{
+  background-color: transparent;
+  color: white;
+}
+
+.form-control::placeholder{
+  color: rgba(255, 255, 255, 0.685);
+}
+
+option{
+  color: black;
+}
+
+#pax{
+  max-width: 225px;
+}
+
+.footer-container{
+  max-width: 750px;
+}
+
+footer{
+  background-color: #242424;
+}
+
+
+@media only screen and (max-width:991px){
+  #carousel-col{
+    margin-bottom: 2rem;
+  }
+}
+
+@media only screen and (max-width:767px){
+  .first-col, #footer-contact-col{
+    margin-bottom: 3rem;
+  }
+}

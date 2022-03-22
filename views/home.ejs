@@ -1,0 +1,184 @@
+<%- include("./partials/header.ejs") %>
+
+<section cLass = "hero">
+  <div class = "hero-image">
+  </div>
+  <div class = "hero-container position-absolute hero-text-div mx-auto my-auto h-100 text-white d-flex justify-content-center align-items-stretch flex-column">
+    <h1 class = "hero-text text-center text-white mb-5">SUNBREAK RESTAURANT</h1>
+    <div class = "row mb-5 text-center justify-content-center">
+      <h6 class = "col-12 col-lg-3"><i class="fa-solid fa-location-arrow me-2"></i>SRI PETALING</h6>
+      <h6 class = "col-12 col-lg-3"><i class="fa-solid fa-phone me-2"></i>012-367 2831</h6>
+      <h6 class = "col-12 col-lg-3"><i class="fa-solid fa-clock me-2 "></i>10AM-10PM</h6>
+    </div>
+    <a href="#reservation-section" class = "rounded-pill py-3 text-dark bg-light mx-auto btn btn-primary reserve-button">RESERVE NOW</a>
+  </div>
+</section>
+
+<section class = "container mt-5">
+  <div class = "row summary mx-auto align-items-center">
+    <div class = "col-12 col-lg-6" id = "carousel-col">
+      <div class="carousel slide mx-auto" id = "food-slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="/image/food_1.jpg" class="d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="/image/food_2.jpg" class="d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="/image/food_2.jpg" class="d-block w-100" alt="...">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class = "col-12 col-lg-6 text-center">
+      <h2 class = "mb-4"><span class = "text-warning d-block fs-4">THE</span> RESTAURANT</h2>
+      <p class = "lead mb-4">Sunbreak Restaurant will feature an outstanding
+        American-Swedish menu with a touch of European influence
+        in an upscale and cozy atmosphere. The menu is inspired
+        from different cuisine’s specialties and will appeal
+        to a wide and varied clientele.</p>
+        <button class = "rounded-pill py-3 text-dark px-5 mx-auto btn border border-dark bg-transparent">READ MORE</button>
+    </div>
+  </div>
+</section>
+
+
+<section class ="mt-5 menu">
+  <div class = "container py-5 text-center menu-container">
+    <h2 class = "mb-5"><span class =" text-warning d-block fs-4 mb-1">OUR</span> MENU</h2>
+
+    <nav id = "menu-nav" class = "mx-auto">
+      <div class="nav nav-tabs justify-content-around mb-5 " id="nav-tab" role="tablist">
+        <button class="nav-link active bg-transparent border-0" id="dessert-tab" data-bs-toggle="tab" data-bs-target="#dessert" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Dessert</button>
+        <button class="nav-link  bg-transparent border-0" id ="lunch-tab" data-bs-toggle="tab" data-bs-target="#lunch" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Lunch</button>
+        <button class="nav-link bg-transparent border-0"  id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Main</button>
+        <button class="nav-link bg-transparent border-0"  id="starters-tab" data-bs-toggle="tab" data-bs-target="#starters" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Starters</button>
+      </div>
+    </nav>
+    <div class="tab-content mx-auto mb-5" id="menu-tab-content">
+      <div class="tab-pane fade show active" id="dessert" role="tabpanel" aria-labelledby="nav-home-tab">
+        <div class = "menu-item py-5">
+          <div class = "d-flex justify-content-between align-items-center">
+            <h4 class = "fw-light">Maggi Boba w/ Cheese</h4>
+            <h4 class = "fw-light">RM 20.00</h4>
+          </div>
+        </div>
+        <div class = "menu-item py-5">
+          <div class = "d-flex justify-content-between align-items-center">
+            <h4 class = "fw-light">Nasi Lemak Cake w/ Shallots</h4>
+            <h4 class = "fw-light">RM 20.00</h4>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="lunch" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <div class = "menu-item py-5">
+          <div class = "d-flex justify-content-between align-items-center">
+            <h4 class = "fw-light">Maggi Milo</h4>
+            <h4 class = "fw-light">RM 20.00</h4>
+          </div>
+        </div>
+        <div class = "menu-item py-5">
+          <div class = "d-flex justify-content-between align-items-center">
+            <h4 class = "fw-light">Sweet Chilli Nasi Lemak</h4>
+            <h4 class = "fw-light">RM 20.00</h4>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="main" role="tabpanel" aria-labelledby="nav-contact-tab">
+        <div class = "menu-item py-5">
+          <div class = "d-flex justify-content-between align-items-center">
+            <h4 class = "fw-light">Deep Fried Wagyu Steak</h4>
+            <h4 class = "fw-light">RM 20.00</h4>
+          </div>
+        </div>
+        <div class = "menu-item py-5">
+          <div class = "d-flex justify-content-between align-items-center">
+            <h4 class = "fw-light">Nasi Lemak Pizza</h4>
+            <h4 class = "fw-light">RM 20.00</h4>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="starters" role="tabpanel" aria-labelledby="nav-contact-tab">
+        <div class = "menu-item py-5">
+          <div class = "d-flex justify-content-between align-items-center">
+            <h4 class = "fw-light">Teh Tolak</h4>
+            <h4 class = "fw-light">RM 20.00</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class = "rounded-pill py-3 text-dark px-5 mx-auto btn border border-dark bg-transparent">DOWNLOAD PDF</button>
+  </div>
+</section>
+
+
+<section class = "reservation py-5" id = "reservation-section">
+  <div class = "container">
+    <h2 class = "text-light text-center mb-5">RESERVATION</h2>
+    <form action="" id = "reservation-form" class = "mx-auto">
+      <div class="row mb-5">
+        <div class="col-12 col-md-6 form-col first-col">
+          <input type="text" class="form-control" placeholder="First Name" aria-label="First Name">
+        </div>
+        <div class="col-12 col-md-6 form-col">
+          <input type="text" class="form-control" placeholder="Last Name" aria-label="Last Name">
+        </div>
+      </div>
+      <div class="row mb-5">
+        <div class="col-12 col-md-6 form-col first-col">
+          <input type="text" class="form-control" placeholder="Contact Number" aria-label="Contact Number">
+        </div>
+        <div class="col-12 col-md-6 form-col">
+          <input type="email" class="form-control" placeholder="Email" aria-label="Email">
+        </div>
+      </div>
+      <div class="row mb-5">
+        <div class="col-12 col-md-6 form-col first-col">
+          <input type="date" class="form-control">
+        </div>
+        <div class="col-12 col-md-6 form-col">
+          <select class="form-control form-select" aria-label="Default select example" id = "time-select">
+            <option value="10:00" selected>10:00</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+            <option value="14:00">14:00</option>
+            <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+            <option value="18:00">18:00</option>
+            <option value="19:00">19:00</option>
+            <option value="20:00">20:00</option>
+          </select>
+        </div>
+      </div>
+      <div class = "mb-5">
+        <input type="number" id="pax" name="pax" min="1" max="100" placeholder="Number of Person" class = "form-control">
+      </div>
+      <textarea name="special-instruction" rows="5" id = "special-instruction" class = "form-control mb-5" placeholder="Special Instruction"></textarea>
+      <div class = "text-center"><button class = "rounded-pill py-3 text-dark bg-light mx-auto btn btn-primary reserve-button">RESERVE NOW</button></div>
+    </form>
+  </div>
+</section>
+
+
+<footer class = "py-5">
+  <div class = "container footer-container row text-white mx-auto">
+    <div class = "col-12 col-md-6" id = "footer-contact-col">
+      <h5 class = "mb-3 text-muted">CONTACT INFORMATION</h5>
+      <h6 class = "fw-light mb-3"><i class="fa-solid fa-location-arrow me-2"></i>SRI PETALING</h6>
+      <h6 class = "fw-light mb-3"><i class="fa-solid fa-phone me-2"></i>012-367 2831</h6>
+      <h6 class = "fw-light mb-3"><i class="fa-solid fa-clock me-2 "></i>10AM-10PM</h6>
+    </div>
+
+    <div class = "col-12 col-md-6"> 
+      <h5 class = "mb-3 text-muted">SUBSCRIBE TO OUR NEWSLETTER</h5>
+    <form action="" class = "mb-3">
+      <input type="email" class = "form-control" name="newsletter" placeholder="Email" id="newsletter">
+    </form>
+      <small>Subscribe to our Newsletter. You will get news about giveaways and new blog posts.</small>
+    </div>
+  </div>
+</footer>
+<%- include("./partials/footer.ejs") %>
