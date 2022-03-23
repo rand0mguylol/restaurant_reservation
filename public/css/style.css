@@ -7,10 +7,16 @@ body{
   filter: invert(1);
 }
 
-input[type="date" i],  input[type="date" i]:focus{
+/* input[type="date" i],  input[type="date" i]:focus{
   color: rgba(255, 255, 255, 0.685);
-}
+} */
 
+.custom-alert{
+  width: 500px;
+  top: 10%;
+  left: 38%;
+  z-index: 1000;
+}
 
 .hero{
   height: 100vh;
@@ -98,7 +104,7 @@ input[type="date" i],  input[type="date" i]:focus{
   height: 65px;
 
 }
-.form-control{
+.form-control:not(.disabled){
   background-color: transparent;
   color: white;
 }

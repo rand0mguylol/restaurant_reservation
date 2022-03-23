@@ -1,0 +1,24 @@
+<% if(success && success.length) {%>
+    <div data-aos="fade-down"
+    class="text-center alert alert-success alert-dismissible fade show position-fixed mx-auto custom-alert"
+    role="alert">
+        <% success.forEach(element => { %>
+            <%= element %>
+            <br>
+        <% }) %> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <% } %>
+
+    <% if(error && error.length) {%>
+
+    <div data-aos="fade-down"
+        class="text-center alert alert-danger alert-dismissible fade show position-fixed mx-auto custom-alert"
+        role="alert">
+        <% error.forEach(element => { %>
+            <%= element %>
+            <br>
+        <% }) %> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>

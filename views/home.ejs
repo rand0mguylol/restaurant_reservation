@@ -1,5 +1,7 @@
 <%- include("./partials/header.ejs") %>
 
+<%- include("./partials/flash.ejs") %>
+
 <section cLass = "hero">
   <div class = "hero-image">
   </div>
@@ -116,48 +118,49 @@
 <section class = "reservation py-5" id = "reservation-section">
   <div class = "container">
     <h2 class = "text-light text-center mb-5">RESERVATION</h2>
-    <form action="" id = "reservation-form" class = "mx-auto">
+    <form action="/reservation" id = "reservation-form" class = "mx-auto" method="POST">
       <div class="row mb-5">
         <div class="col-12 col-md-6 form-col first-col">
-          <input type="text" class="form-control" placeholder="First Name" aria-label="First Name">
+          <input type="text" class="form-control" placeholder="First Name" aria-label="First Name" name ="firstName">
         </div>
         <div class="col-12 col-md-6 form-col">
-          <input type="text" class="form-control" placeholder="Last Name" aria-label="Last Name">
+          <input type="text" class="form-control" placeholder="Last Name" aria-label="Last Name" name ="lastName">
         </div>
       </div>
       <div class="row mb-5">
         <div class="col-12 col-md-6 form-col first-col">
-          <input type="text" class="form-control" placeholder="Contact Number" aria-label="Contact Number">
+          <input type="tel" class="form-control" placeholder="Contact Number (xxx-xxxxxxx)" aria-label="Contact Number" name ="contactNumber" pattern="[0-9]{3}-[0-9]{7,8}">
         </div>
         <div class="col-12 col-md-6 form-col">
-          <input type="email" class="form-control" placeholder="Email" aria-label="Email">
+          <input type="email" class="form-control" placeholder="Email" aria-label="Email" name ="email">
         </div>
       </div>
       <div class="row mb-5">
         <div class="col-12 col-md-6 form-col first-col">
-          <input type="date" class="form-control">
+          <input type="date" class="form-control" name ="bookingDate" min = "<%= today %>" id = "date-field">
         </div>
-        <div class="col-12 col-md-6 form-col">
-          <select class="form-control form-select" aria-label="Default select example" id = "time-select">
-            <option value="10:00" selected>10:00</option>
-            <option value="11:00">11:00</option>
-            <option value="12:00">12:00</option>
-            <option value="13:00">13:00</option>
-            <option value="14:00">14:00</option>
-            <option value="15:00">15:00</option>
-            <option value="16:00">16:00</option>
-            <option value="17:00">17:00</option>
-            <option value="18:00">18:00</option>
-            <option value="19:00">19:00</option>
-            <option value="20:00">20:00</option>
+        <div class="col-12 col-md-6 form-col" id = "time-slot-col">
+          <% if(!timeList.length) { %>
+          <input type="text" value = "Fully Booked" class = "form-control disabled" disabled>
+          <% } else { %>
+          <select class="form-control form-select" aria-label="Default select example" id = "time-select" name ="bookingTime">
+            <option selected>Select Time</option>
+            <% for(let t of timeList) { %>
+            <option value="<%= t %>"><%= t %></option>
+            <% } %>
           </select>
+          <% } %>
         </div>
       </div>
       <div class = "mb-5">
-        <input type="number" id="pax" name="pax" min="1" max="100" placeholder="Number of Person" class = "form-control">
+        <input type="number" id="pax" min="1" max="100" placeholder="Number of Person" class = "form-control" name ="pax">
       </div>
-      <textarea name="special-instruction" rows="5" id = "special-instruction" class = "form-control mb-5" placeholder="Special Instruction"></textarea>
-      <div class = "text-center"><button class = "rounded-pill py-3 text-dark bg-light mx-auto btn btn-primary reserve-button">RESERVE NOW</button></div>
+      <textarea name="specialInstruction" rows="5" id = "special-instruction" class = "form-control mb-5" placeholder="Special Instruction"></textarea>
+      <div class = "text-center">
+        
+        <button type = "submit" id = "reserve-now-button" class = "rounded-pill py-3 text-dark bg-light mx-auto btn btn-primary reserve-button" <% if(!timeList.length) { %> disabled <% } %>>RESERVE NOW</button>
+        
+      </div>
     </form>
   </div>
 </section>
@@ -181,4 +184,5 @@
     </div>
   </div>
 </footer>
+
 <%- include("./partials/footer.ejs") %>
