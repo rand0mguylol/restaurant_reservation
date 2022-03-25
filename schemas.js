@@ -1,4 +1,3 @@
-// const JoiDate = require("@joi/date")
 const Joi = require("joi").extend(require('@joi/date'));
 const sanitizeHtml = require("sanitize-html");
 
