@@ -1,0 +1,66 @@
+<%- include("./partials/header.ejs") %>
+
+<%- include("./partials/flash.ejs") %>
+
+<section>
+  <%- include("./partials/navbar.ejs") %>
+  
+  
+  
+  <section class = "search-booking-section my-5">
+  
+    <div class="mb-3 container text-center">
+    <h1 class = "mb-5">SEARCH BOOKING</h1>
+  
+        <input type="text" class="form-control other-form d-inline-block" name="searchBooking" id="search-booking" placeholder="Search booking">
+        <button type = "submit" class = "btn btn-success" id = "search">Search</button>
+    </div>
+  </section>
+  
+  
+  <section class = "container" id = "booking-table">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
+          <th scope="col">Number</th>
+          <th scope="col">Email</th>
+          <th scope="col">Date</th>
+          <th scope="col">Time</th>
+          <th scope="col">Instruction</th>
+          <th scope="col">Status</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody id = "booking-detail-tbody">
+      </tbody>
+    </table>
+  </section>
+</section>
+
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModallLabel" >Cancel Booking?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form  action method="POST" id = "delete-form">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Cancel Booking</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<%- include("./partials/footer.ejs") %>
+<script src="/js/booking.js"></script>
+<%- include("./partials/script.ejs") %>

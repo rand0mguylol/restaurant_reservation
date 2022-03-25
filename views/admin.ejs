@@ -1,0 +1,23 @@
+<%- include("./partials/header.ejs") %>
+
+<%- include("./partials/flash.ejs") %>
+
+<%- include("./partials/navbar.ejs") %>
+
+<section class = "container my-5">
+  <form action="/admin/login" method="POST">
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control other-form" id="name" placeholder="Name" name = "name">
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control other-form" id="password" placeholder="Password" name = "password">
+    </div>
+    <button class = "btn btn-primary" type="submit">Login</button>
+  </form>
+</section>
+
+<%- include("./partials/footer.ejs") %>
+<script src="/js/booking.js"></script>
+<%- include("./partials/script.ejs") %>

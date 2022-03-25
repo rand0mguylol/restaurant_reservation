@@ -3,23 +3,14 @@ const app = express();
 const path = require('path');
 const morgan = require("morgan")
 const AppError = require("./utils/AppError")
-const Joi = require("joi")
 const methodOverride = require("method-override")
 const session = require("express-session")
 const flash = require("connect-flash")
-// const wrapAsync = require("./utils/wrapAsync")
 const { connectionPromise, sql, MSSQLStore } = require("./database/db.js")
-const sanitizeHtml = require("sanitize-html");
-// const NVarChar = require("tedious/lib/data-types/nvarchar");
-// const userRoutes = require('./routes/user');
-// const multer  = require('multer')
-// const uploadText = multer()
 const { reserveSchema} = require("./schemas")
-const fs = require("fs")
 const { v4: uuidv4 } = require('uuid');
-const { time } = require("console");
-// const { writeHeapSnapshot } = require("v8");
-// const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt")
+const wrapAsync = require("./utils/wrapAsync")
 
 
 const sessionOption = {
@@ -30,11 +21,9 @@ const sessionOption = {
     expires: Date.now() + (1000 * 60 * 60 * 24 * 7 ),
     maxAge: 1000 * 60 * 60 * 24 * 7
   },
- // store: MSSQLStore, 
-  secret: "placeholderSecret"
+ store: MSSQLStore, 
+  secret: process.env.SECRET
 }
-
-
 
 
 app.set("view engine", "ejs");
@@ -51,9 +40,30 @@ app.use(flash())
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.admin = req.session.admin
   next();
 })
 
+
+const checkIfAdmin = wrapAsync(async (req, res, next) => {
+  const pool = await connectionPromise()
+  const ps = new sql.PreparedStatement(pool)
+
+  ps.input("sid", sql.VarChar(255))
+
+  const preparedStatement = await ps.prepare(`SELECT admin.name FROM admin, sessions 
+                                              WHERE sessions.adminId = admin.adminId 
+                                              AND sessions.sid =  @sid`)
+
+  const result = await preparedStatement.execute({sid: req.sessionID})
+
+  if(result.recordset === undefined || result.recordset.length === 0) return next(new AppError("Not Authorized", 401))
+
+  return next()
+})
+
+// Validate a form against a schema
+// Route: Redirect to if validation of form against the schema fails
 const validateData = (schema, route) => {
   return (req, res, next) => {
     const { error } = schema.validate(req.body, {"abortEarly": false, "allowUnknown": true});
@@ -73,7 +83,7 @@ const validateData = (schema, route) => {
 }
 
 // Check if the user has another booking on the same day
-const checkIfBooked = async (req, res, next) => {
+const checkIfBooked = wrapAsync(async (req, res, next) => {
   const { contactNumber, bookingDate } = req.body;
 
   const pool = await connectionPromise();
@@ -94,10 +104,10 @@ const checkIfBooked = async (req, res, next) => {
     req.flash("error", "It seems like you already have a booking on that day. If you would like to make a new booking, please cancel your old booking.")
     res.redirect("/#reservation-section")
   }
-}
+})
 
 // Generate new time list
-const getTimeList  = (timeList, takenTimeList, result) => {
+const getTimeList  = (timeList, takenTimeList, result, exception = false) => {
     takenTimeList = result.recordset.map(t => {
       let newTime = new Date(t.bookingTime);
       let hr = newTime.getUTCHours().toString().padStart(2, "0"); // => 9
@@ -106,13 +116,13 @@ const getTimeList  = (timeList, takenTimeList, result) => {
       return `${hr}:${minute}`
     })
 
-    timeList = timeList.filter(slot => !takenTimeList.includes(slot))
+    timeList = timeList.filter(slot => !takenTimeList.includes(slot) || slot === exception)
 
     return timeList
 }
 
 // Extra validation in the event the user mess with the HTML.
-const checkHasTime = async (req, res, next) =>{
+const checkHasTime = wrapAsync(async (req, res, next) =>{
   const { bookingDate, bookingTime } = req.body;
 
   const pool = await connectionPromise();
@@ -133,17 +143,24 @@ const checkHasTime = async (req, res, next) =>{
   else{
     next(new AppError("Something went wrong", 500))
   }
-}
+})
 
-app.get("/", async (req, res) => {
+// Return today's date
+const getToday = () => {
   let today = new Date();
   let dd = String(today.getDate() + 2).padStart(2, '0');
-  let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  let mm = String(today.getMonth() + 1).padStart(2, '0');
   let yyyy = today.getFullYear();
+
+  return`${yyyy}-${mm}-${dd}`
+
+}
+
+app.get("/", wrapAsync(async (req, res) => {
+  let today = getToday()
   let takenTimeList = []
   let timeList = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
-  today = `${yyyy}-${mm}-${dd}`
 
   const pool = await connectionPromise()
   const ps = new sql.PreparedStatement(pool)
@@ -158,22 +175,107 @@ app.get("/", async (req, res) => {
     timeList = getTimeList(timeList, takenTimeList, result)
   }
 
+  
+  // console.log(timeList)
 
-  console.log(timeList)
+  res.render("home", { today, timeList,  })
+}))
 
-  res.render("home", { today, timeList })
+app.get("/booking", checkIfAdmin,  (req, res) => {
+  res.render("booking")
 })
 
+// Sends the booking details when the admin searches for booking use booking code or mobile number
+app.post("/booking", wrapAsync(async (req, res, next) => {
+  const {searchBooking } = req.body;
 
-app.post("/reservation", validateData(reserveSchema, "/#reservation-section"), checkIfBooked, checkHasTime, async (req, res) =>{
-  console.log(req.body)
-  // console.log(typeof req.body.bookingDate)
+  const pool = await connectionPromise();
+  const ps = new sql.PreparedStatement(pool);
+  ps.input("searchBooking", sql.VarChar(256));
+
+  const preparedStatement = await ps.prepare(`SELECT firstName, lastName, contactNumber, email, bookingDate, 
+                                              bookingTime, specialInstruction, status, bookingCode
+                                              FROM bookingList WHERE bookingCode = @searchBooking  OR contactNumber = @searchBooking`);
+
+  const result = await preparedStatement.execute({searchBooking: searchBooking });
+    
+  if(result.recordset === undefined){
+    next(new AppError("Something Went Wrong", 500))
+  }
+
+  res.send(JSON.stringify({bookingDetail: result.recordset}))
+}))
+
+app.delete("/booking/:bookingCode", wrapAsync(async(req, res) => {
+  const { bookingCode } = req.params
+
+  const pool = await connectionPromise()
+  const ps = new sql.PreparedStatement(pool)
+
+  ps.input("bookingCode", sql.VarChar(256));
+  ps.input("status", sql.VarChar(20));
+
+  const preparedStatement = await ps.prepare(`UPDATE bookingList SET status = @status WHERE bookingCode = @bookingCode`);
+  await preparedStatement.execute({status: "CANCELLED", bookingCode: bookingCode})
+
+  req.flash("success", "Booking Cancelled")
+  res.redirect("/booking")
+}))
+
+app.get("/edit/:bookingCode", wrapAsync(async(req, res, next) => {
+  let today = getToday()
+  let takenTimeList = []
+  let timeList = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+
+
+  const { bookingCode } = req.params;
+  const {date, time} =req.query
+
+  const pool = await connectionPromise()
+  const ps = new sql.PreparedStatement(pool);
+
+  ps.input("bookingCode", sql.VarChar(256))
+  ps.input("status", sql.VarChar(15))
+
+  const preparedStatement = await ps.prepare(`SELECT bookingTime FROM bookingList WHERE bookingCode = @bookingCode AND status = @status`)
+
+  const result = await preparedStatement.execute({bookingCode: bookingCode, status: "BOOKED"})
+  
+  // Either the booking has been cancelled, deleted or the booking code is not in the table.
+  if(result.recordset === undefined || result.recordset.length === 0){
+    next(new AppError("Page Not Found", 404))
+  }
+
+  timeList = getTimeList(timeList, takenTimeList, result, time)
+
+  res.render("edit", {date, time, today, timeList, bookingCode})
+}))
+
+app.put("/edit/:bookingCode", wrapAsync(async (req, res) => {
+  const { bookingDate, bookingTime } = req.body;
+  const { bookingCode } = req.params
+
+  const pool = await connectionPromise();
+  const ps = new sql.PreparedStatement(pool)
+
+  ps.input("bookingCode", sql.VarChar(256))
+  ps.input("bookingTime", sql.VarChar(20))
+  ps.input("bookingDate", sql.Date())
+
+  const preparedStatement = await ps.prepare(`UPDATE bookingList SET bookingDate = @bookingDate, bookingTime = @bookingTime 
+                                              WHERE bookingCode = @bookingCode`)
+
+  await preparedStatement.execute({bookingCode: bookingCode, bookingDate: bookingDate, bookingTime: bookingTime})
+
+  req.flash("success", "Booking Updated")
+  res.redirect("/booking")
+}))
+
+app.post("/reservation", validateData(reserveSchema, "/#reservation-section"), checkIfBooked, checkHasTime, wrapAsync(async (req, res) =>{
+
   let {firstName, lastName, contactNumber, email, pax, bookingDate, bookingTime, specialInstruction}  = req.body;
   const pool = await connectionPromise();
   const ps = new sql.PreparedStatement(pool);
-
-  console.log(bookingTime)
-  console.log(typeof bookingTime)
 
   ps.input("firstName", sql.VarChar(100))
   ps.input("lastName", sql.VarChar(100))
@@ -186,7 +288,6 @@ app.post("/reservation", validateData(reserveSchema, "/#reservation-section"), c
   ps.input("status", sql.VarChar(20))
   ps.input("bookingCode", sql.VarChar(256))
 
-  // bookingTime += ":00"
   const preparedStatement = await ps.prepare(`INSERT INTO bookingList (firstName, lastName, contactNumber, email, pax,
                                               bookingDate, bookingTime, specialInstruction, status, bookingCode) VALUES
                                               (@firstName, @lastName, @contactNumber, @email, @pax,
@@ -200,9 +301,10 @@ await ps.unprepare();
 req.flash("success", "Successfully Booked");
 res.redirect("/")
 
-})
+}))
 
-app.post("/getdatetime", async (req, res) => {
+// Sends back the available time slot when user selects the date
+app.post("/getdatetime", wrapAsync(async (req, res) => {
   let takenTimeList = []
   let timeList = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
@@ -210,25 +312,76 @@ app.post("/getdatetime", async (req, res) => {
   const ps = new sql.PreparedStatement(pool)
 
   ps.input("date", sql.Date())
+  ps.input("status", sql.VarChar(20))
 
-  const preparedStatement = await ps.prepare(`SELECT bookingTime FROM bookingList WHERE bookingDate = @date`)
-  const result = await preparedStatement.execute({date: req.body.chosenDate})
+  const preparedStatement = await ps.prepare(`SELECT bookingTime FROM bookingList WHERE bookingDate = @date AND status = @status`)
+  const result = await preparedStatement.execute({date: req.body.chosenDate, status: "BOOKED"})
   await ps.unprepare()
 
   if(result.recordset !== undefined && result.recordset.length !== 0){
     timeList = getTimeList(timeList, takenTimeList, result)
   }
 
+
   res.send(JSON.stringify({timeList: timeList}))
+}))
+
+app.get("/admin", (req, res) => {
+  res.render("admin")
+})
+
+app.post("/admin/login", wrapAsync(async (req, res) => {
+  const { name, password } = req.body
+
+  const pool = await connectionPromise()
+  const ps = new sql.PreparedStatement(pool)
+  
+  ps.input("name", sql.VarChar(100))
+
+  const preparedStatement = await ps.prepare(`SELECT adminId, password FROM admin WHERE name = @name`);
+
+  const result = await preparedStatement.execute({name: name})
+  await ps.unprepare()
+
+  if(result.recordset === undefined || result.recordset.length === 0){
+    req.flash("error", "Invalid Details")
+    res.redirect("/admin")
+  }
+
+  const { password:adminPassword, adminId} = result.recordset[0]
+  const isValidPassword = await bcrypt.compare(password, adminPassword)
+
+  if(!isValidPassword) {
+    req.flash("error", "Invalid Details")
+    return res.redirect("/admin")
+  }
+
+  const psStore = new sql.PreparedStatement(pool)
+  psStore.input("sid", sql.NVarChar(255))
+  psStore.input("adminId", sql.Int())
+
+  const preparedStatementStore = await psStore.prepare("UPDATE sessions SET adminId = @adminId WHERE sid = @sid")
+  await preparedStatementStore.execute({adminId: adminId, sid: req.sessionID})
+  await psStore.unprepare();
+
+  req.session.admin = true
+  res.redirect("/")
+}))
+
+app.post("/admin/logout", (req, res) => {
+  req.session.destroy((err) =>{
+    if(err) return next(err)
+
+    req.session = null;
+    res.redirect("/")
+  })
 })
 
 // Error Handling Middleware
 app.use((err, req, res, next) =>{
 
   const { statusCode=500 , message = "Something Went Wrong"} = err
-  // if(err.message === "Validation Error") res.redirect("/educatee/register")
-  res.send(message)
-  console.log(statusCode, message)
+  res.render("error", {message})
 })
 
 app.listen(3000, () => {

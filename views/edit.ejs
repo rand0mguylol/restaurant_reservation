@@ -1,0 +1,39 @@
+<%- include("./partials/header.ejs") %>
+
+<%- include("./partials/flash.ejs") %>
+
+<%- include("./partials/navbar.ejs") %>
+
+<section class ="container my-5">
+  <h1 class = "text-center">Edit Booking</h1>
+  <h6>Current Date: <%= date %></h6>
+  <h6>Current Time: <%= time %></h6>
+</section>
+
+<section class = "container mb-5">
+  <form action="/edit/<%= bookingCode %>?_method=PUT" method="POST">
+    <div class="col-12 col-md-6 form-col first-col mb-5">
+      <input type="date" class="form-control other-form" name ="bookingDate" value = <%= date %> min = "<%= today %>" id = "date-field">
+    </div>
+    <div class="col-12 col-md-6 form-col" id = "time-slot-col">
+      <% if(!timeList.length) { %>
+        <input type="text" value = "Fully Booked" class = "form-control disabled" disabled>
+        <% } else { %>
+        <select class="form-control form-select other-form" aria-label="Default select example" id = "time-select" name ="bookingTime">
+          <option>Select Time</option>
+          <% for(let t of timeList) { %>
+          <option value="<%= t %>" <% if(t === time) { %> selected <%} %>><%= t %></option>
+          <% } %>
+        </select>
+        <% } %>
+    </div>
+
+      <button type = "submit" class = "btn btn-primary mt-5">Edit Booking</button>
+    </form>
+
+</section>
+
+
+
+<%- include("./partials/footer.ejs") %>
+<%- include("./partials/script.ejs") %>

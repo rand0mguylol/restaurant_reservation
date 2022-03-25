@@ -2,18 +2,20 @@
 
 <%- include("./partials/flash.ejs") %>
 
-<section cLass = "hero">
-  <div class = "hero-image">
-  </div>
+<section cLass = "hero hero-image">
+  
+  <%- include("./partials/navbar.ejs") %>
+
   <div class = "hero-container position-absolute hero-text-div mx-auto my-auto h-100 text-white d-flex justify-content-center align-items-stretch flex-column">
     <h1 class = "hero-text text-center text-white mb-5">SUNBREAK RESTAURANT</h1>
     <div class = "row mb-5 text-center justify-content-center">
       <h6 class = "col-12 col-lg-3"><i class="fa-solid fa-location-arrow me-2"></i>SRI PETALING</h6>
-      <h6 class = "col-12 col-lg-3"><i class="fa-solid fa-phone me-2"></i>012-367 2831</h6>
+      <h6 class = "col-12 col-lg-3"><i class="fa-solid fa-phone me-2"></i>012-345 6789</h6>
       <h6 class = "col-12 col-lg-3"><i class="fa-solid fa-clock me-2 "></i>10AM-10PM</h6>
     </div>
     <a href="#reservation-section" class = "rounded-pill py-3 text-dark bg-light mx-auto btn btn-primary reserve-button">RESERVE NOW</a>
   </div>
+
 </section>
 
 <section class = "container mt-5">
@@ -121,29 +123,29 @@
     <form action="/reservation" id = "reservation-form" class = "mx-auto" method="POST">
       <div class="row mb-5">
         <div class="col-12 col-md-6 form-col first-col">
-          <input type="text" class="form-control" placeholder="First Name" aria-label="First Name" name ="firstName">
+          <input type="text" class="form-control" placeholder="First Name" aria-label="First Name" name ="firstName" required>
         </div>
         <div class="col-12 col-md-6 form-col">
-          <input type="text" class="form-control" placeholder="Last Name" aria-label="Last Name" name ="lastName">
+          <input type="text" class="form-control" placeholder="Last Name" aria-label="Last Name" name ="lastName" required>
         </div>
       </div>
       <div class="row mb-5">
         <div class="col-12 col-md-6 form-col first-col">
-          <input type="tel" class="form-control" placeholder="Contact Number (xxx-xxxxxxx)" aria-label="Contact Number" name ="contactNumber" pattern="[0-9]{3}-[0-9]{7,8}">
+          <input type="tel" class="form-control" placeholder="Contact Number (xxx-xxxxxxx)" aria-label="Contact Number" name ="contactNumber" pattern="[0-9]{3}-[0-9]{7,8}" required>
         </div>
         <div class="col-12 col-md-6 form-col">
-          <input type="email" class="form-control" placeholder="Email" aria-label="Email" name ="email">
+          <input type="email" class="form-control" placeholder="Email" aria-label="Email" name ="email" required>
         </div>
       </div>
       <div class="row mb-5">
         <div class="col-12 col-md-6 form-col first-col">
-          <input type="date" class="form-control" name ="bookingDate" min = "<%= today %>" id = "date-field">
+          <input type="date" class="form-control" name ="bookingDate" min = "<%= today %>" id = "date-field" required>
         </div>
         <div class="col-12 col-md-6 form-col" id = "time-slot-col">
           <% if(!timeList.length) { %>
           <input type="text" value = "Fully Booked" class = "form-control disabled" disabled>
           <% } else { %>
-          <select class="form-control form-select" aria-label="Default select example" id = "time-select" name ="bookingTime">
+          <select class="form-control form-select" aria-label="Default select example" id = "time-select" name ="bookingTime" required>
             <option selected>Select Time</option>
             <% for(let t of timeList) { %>
             <option value="<%= t %>"><%= t %></option>
@@ -153,7 +155,7 @@
         </div>
       </div>
       <div class = "mb-5">
-        <input type="number" id="pax" min="1" max="100" placeholder="Number of Person" class = "form-control" name ="pax">
+        <input type="number" id="pax" min="1" max="100" placeholder="Number of Person" class = "form-control" name ="pax" required>
       </div>
       <textarea name="specialInstruction" rows="5" id = "special-instruction" class = "form-control mb-5" placeholder="Special Instruction"></textarea>
       <div class = "text-center">
@@ -165,24 +167,6 @@
   </div>
 </section>
 
-
-<footer class = "py-5">
-  <div class = "container footer-container row text-white mx-auto">
-    <div class = "col-12 col-md-6" id = "footer-contact-col">
-      <h5 class = "mb-3 text-muted">CONTACT INFORMATION</h5>
-      <h6 class = "fw-light mb-3"><i class="fa-solid fa-location-arrow me-2"></i>SRI PETALING</h6>
-      <h6 class = "fw-light mb-3"><i class="fa-solid fa-phone me-2"></i>012-367 2831</h6>
-      <h6 class = "fw-light mb-3"><i class="fa-solid fa-clock me-2 "></i>10AM-10PM</h6>
-    </div>
-
-    <div class = "col-12 col-md-6"> 
-      <h5 class = "mb-3 text-muted">SUBSCRIBE TO OUR NEWSLETTER</h5>
-    <form action="" class = "mb-3">
-      <input type="email" class = "form-control" name="newsletter" placeholder="Email" id="newsletter">
-    </form>
-      <small>Subscribe to our Newsletter. You will get news about giveaways and new blog posts.</small>
-    </div>
-  </div>
-</footer>
-
 <%- include("./partials/footer.ejs") %>
+<script src ="/js/home.js"></script>
+<%- include("./partials/script.ejs") %>

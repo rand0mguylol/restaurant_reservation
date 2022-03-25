@@ -1,5 +1,8 @@
+// Every time the user changes the date input, get the available time list for the particular date
 async function getDateTime(target) {
+
   const chosenDate = target.value;
+
   const reserveNowButton = document.getElementById("reserve-now-button")
 
   const res = await axios({
@@ -38,4 +41,4 @@ const dateField = document.getElementById("date-field")
 dateField.addEventListener("change", e => {
   getDateTime(e.target)
 })
-
+  

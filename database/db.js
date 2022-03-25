@@ -8,7 +8,7 @@ const MSSQLStoreNew = require('connect-mssql-v2');
 const storeConfig = {
 user: process.env.DB_USER,
 password: process.env.DB_PWD,
-server: 'localhost', // You can use 'localhost\\instance' to connect to named instance
+server: 'localhost', // You can use 'localhost' to connect to named instance
 database: process.env.DB_NAME,
 options: {
   encrypt: false, // Use this if you're on Windows Azure

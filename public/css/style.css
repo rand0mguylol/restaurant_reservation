@@ -1,9 +1,18 @@
+html{
+  min-height: 100%
+  
+}
+
 body{
   font-family: 'Lato', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh
 }
 
 /* https://stackoverflow.com/questions/62162645/change-color-of-chromes-calendar-icon-in-html-date-input */
-::-webkit-calendar-picker-indicator {
+#date-field:not(.other-form)::-webkit-calendar-picker-indicator{
   filter: invert(1);
 }
 
@@ -11,10 +20,19 @@ body{
   color: rgba(255, 255, 255, 0.685);
 } */
 
+
+tr{
+  text-align: center;
+  vertical-align: middle;
+}
 .custom-alert{
   width: 500px;
   top: 10%;
   left: 38%;
+  z-index: 1000;
+}
+
+.navbar{
   z-index: 1000;
 }
 
@@ -100,11 +118,11 @@ body{
   height: auto;
 }
 
-.form-control:not(#special-instruction):not(#newsletter){
+.form-control:not(#special-instruction):not(#newsletter):not(.other-form){
   height: 65px;
 
 }
-.form-control:not(.disabled){
+.form-control:not(.disabled):not(.other-form){
   background-color: transparent;
   color: white;
 }
@@ -113,12 +131,12 @@ body{
   max-width: 800px;
 }
 
-.form-control:focus{
+.form-control:focus:not(.other-form){
   background-color: transparent;
   color: white;
 }
 
-.form-control::placeholder{
+.form-control:not(.other-form)::placeholder{
   color: rgba(255, 255, 255, 0.685);
 }
 
@@ -136,6 +154,15 @@ option{
 
 footer{
   background-color: #242424;
+}
+
+#search-booking{
+  max-width: 500px;
+}
+
+.edit-section {
+  max-width: 700px;
+  margin-top: 7rem;
 }
 
 
