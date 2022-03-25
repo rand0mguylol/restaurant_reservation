@@ -31,8 +31,14 @@ If you would to select SQL Authentication as your authentication option, ensure 
 1. Ensure node has been installed on your machine.
 2. Run *npm i* to install the dependencies
 3. Create an `.env` file.
-4. Fill in the details. Insert anything for SECRET ![Screenshot (608)](https://user-images.githubusercontent.com/72346097/160038904-4c2415e9-36c7-4195-a1f1-a8852f85dbca.png)
-
+4. Fill in the details. Insert anything for SECRET 
+  ```
+  DB_USER=
+  DB_PWD=
+  DB_NAME=
+  SECRET=
+  
+  ```
 
 
 
