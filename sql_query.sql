@@ -1,5 +1,5 @@
 -- Highlight and execute this query first, ensure you select Reservation as the database before running other queries
-CREATE DATABASE Reservatation
+CREATE DATABASE Reservation
 --
 
 CREATE TABLE bookingList
