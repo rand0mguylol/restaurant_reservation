@@ -14,24 +14,35 @@ const wrapAsync = require("./utils/wrapAsync")
 
 
 const sessionOption = {
-  resave: false,
-  saveUninitialized: true,
+  resave: false, //Forces the session to be saved back to the session store, 
+                // even if the session was never modified during the request.
+  saveUninitialized: true, //Forces a session that is "uninitialized" to be saved to the store
   cookie: {
     httpOnly: true,
     expires: Date.now() + (1000 * 60 * 60 * 24 * 7 ),
-    maxAge: 1000 * 60 * 60 * 24 * 7
+    maxAge: 1000 * 60 * 60 * 24 * 7 // How long the cookie is stored before it expires
   },
- store: MSSQLStore, 
-  secret: process.env.SECRET
+ store: MSSQLStore,  // Database Store
+  secret: process.env.SECRET  //used to sign the session ID cookie
 }
 
-
+// The templating language
 app.set("view engine", "ejs");
+
+// the directory where the template files are located.
 app.set('views', path.join(__dirname, 'views'));
+
+// Direcotry where static folders are stored
 app.use(express.static(path.join(__dirname, 'public')))
+
+// Lets you use HTTP verbs such as PUT or DELETE in places
+//  where the client doesn't support it.
 app.use(methodOverride('_method'));
+
 app.use(express.urlencoded({ extended: true}))
 app.use(express.json())
+
+// For logging
 app.use(morgan("tiny"))
 app.use(session(sessionOption))
 app.use(flash())
@@ -44,7 +55,7 @@ app.use((req, res, next) => {
   next();
 })
 
-
+// Sire to see if the user is an admin before allowing the user to access certain routes
 const checkIfAdmin = wrapAsync(async (req, res, next) => {
   const pool = await connectionPromise()
   const ps = new sql.PreparedStatement(pool)
@@ -93,7 +104,9 @@ const checkIfBooked = wrapAsync(async (req, res, next) => {
   ps.input("status", sql.VarChar(15));
   ps.input("bookingDate", sql.Date());
 
-  const preparedStatement = await ps.prepare(`SELECT bookingDate, bookingTime FROM bookingList WHERE contactNumber = @contactNumber AND status = @status AND bookingDate = @bookingDate`)
+  const preparedStatement = await ps.prepare(`SELECT bookingDate, bookingTime FROM bookingList 
+                                              WHERE contactNumber = @contactNumber 
+                                              AND status = @status AND bookingDate = @bookingDate`)
 
   const result = await preparedStatement.execute({contactNumber: contactNumber, status: "BOOKED", bookingDate: bookingDate})
 
@@ -107,6 +120,11 @@ const checkIfBooked = wrapAsync(async (req, res, next) => {
 })
 
 // Generate new time list
+// @params
+// timeList : The complete timelist
+// takenTimeLines: Time List that have been booked
+// result: result return from executed prepares statement
+// exception: time list has been booked but still include in the availabletimelist. Is used during editing booking so selected time list will still appear.
 const getTimeList  = (timeList, takenTimeList, result, exception = false) => {
     takenTimeList = result.recordset.map(t => {
       let newTime = new Date(t.bookingTime);
@@ -132,7 +150,8 @@ const checkHasTime = wrapAsync(async (req, res, next) =>{
   ps.input("bookingDate", sql.Date());
   ps.input("bookingTime", sql.VarChar(30));
 
-  const preparedStatement = await ps.prepare(`SELECT bookingDate, bookingTime FROM bookingList WHERE status = @status AND bookingDate = @bookingDate AND bookingTime = @bookingTime`)
+  const preparedStatement = await ps.prepare(`SELECT bookingDate, bookingTime FROM bookingList 
+                                                WHERE status = @status AND bookingDate = @bookingDate AND bookingTime = @bookingTime`)
 
   const result = await preparedStatement.execute({status: "BOOKED", bookingDate: bookingDate, bookingTime: bookingTime})
 
@@ -156,6 +175,8 @@ const getToday = () => {
 
 }
 
+// Renders the landing page
+// Gets the available time list for current date
 app.get("/", wrapAsync(async (req, res) => {
   let today = getToday()
   let takenTimeList = []
@@ -181,6 +202,7 @@ app.get("/", wrapAsync(async (req, res) => {
   res.render("home", { today, timeList,  })
 }))
 
+// Renders booking page for admin
 app.get("/booking", checkIfAdmin,  (req, res) => {
   res.render("booking")
 })
@@ -206,6 +228,8 @@ app.post("/booking", wrapAsync(async (req, res, next) => {
   res.send(JSON.stringify({bookingDetail: result.recordset}))
 }))
 
+
+// Delete a booking
 app.delete("/booking/:bookingCode", wrapAsync(async(req, res) => {
   const { bookingCode } = req.params
 
@@ -222,6 +246,7 @@ app.delete("/booking/:bookingCode", wrapAsync(async(req, res) => {
   res.redirect("/booking")
 }))
 
+// Updates a booking
 app.get("/edit/:bookingCode", wrapAsync(async(req, res, next) => {
   let today = getToday()
   let takenTimeList = []
@@ -251,6 +276,7 @@ app.get("/edit/:bookingCode", wrapAsync(async(req, res, next) => {
   res.render("edit", {date, time, today, timeList, bookingCode})
 }))
 
+// Edits a booking
 app.put("/edit/:bookingCode", wrapAsync(async (req, res) => {
   const { bookingDate, bookingTime } = req.body;
   const { bookingCode } = req.params
@@ -271,6 +297,8 @@ app.put("/edit/:bookingCode", wrapAsync(async (req, res) => {
   res.redirect("/booking")
 }))
 
+
+// Creates a booking
 app.post("/reservation", validateData(reserveSchema, "/#reservation-section"), checkIfBooked, checkHasTime, wrapAsync(async (req, res) =>{
 
   let {firstName, lastName, contactNumber, email, pax, bookingDate, bookingTime, specialInstruction}  = req.body;
@@ -304,6 +332,7 @@ res.redirect("/")
 }))
 
 // Sends back the available time slot when user selects the date
+// Axios request
 app.post("/getdatetime", wrapAsync(async (req, res) => {
   let takenTimeList = []
   let timeList = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
@@ -326,10 +355,12 @@ app.post("/getdatetime", wrapAsync(async (req, res) => {
   res.send(JSON.stringify({timeList: timeList}))
 }))
 
+// Renders admin login page
 app.get("/admin", (req, res) => {
   res.render("admin")
 })
 
+// Login admin
 app.post("/admin/login", wrapAsync(async (req, res) => {
   const { name, password } = req.body
 
@@ -368,6 +399,7 @@ app.post("/admin/login", wrapAsync(async (req, res) => {
   res.redirect("/")
 }))
 
+// Log Out admin
 app.post("/admin/logout", (req, res) => {
   req.session.destroy((err) =>{
     if(err) return next(err)
